@@ -17,4 +17,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/sqli','App\Http\Controllers\SearchController@index');
+Route::get('/sqli','App\Http\Controllers\SearchController@index')->name('search');

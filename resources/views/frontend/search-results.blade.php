@@ -2,16 +2,11 @@
 
 @section('content')
 
-    {{--<div class="grid">--}}
-    {{--@foreach($photos as $photo)--}}
-    {{--<div class="">--}}
-    {{--<img src="{{ $photo['cover_photo']['urls']['small'] }}"/>--}}
-    {{--</div>--}}
-    {{--@endforeach--}}
-    {{--</div>--}}
 
-    <!-- This example requires Tailwind CSS v2.0+ -->
-    <div class="flex flex-col">
+    <div class="flex flex-col" style="width: 1200px; margin: 0 auto">
+
+        @include('frontend.components.search')
+
         <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
                 <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
@@ -20,8 +15,11 @@
                         <tr>
                             <th scope="col"
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Name
+
                             </th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Price
                             <th scope="col"
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Title
@@ -32,50 +30,53 @@
                             </th>
                             <th scope="col"
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Role
+                                Likes
                             </th>
                             <th scope="col" class="relative px-6 py-3">
-                                <span class="sr-only">Edit</span>
+                                <span class="sr-only">Availability</span>
                             </th>
                         </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0 h-10 w-10">
-                                        <img class="h-10 w-10 rounded-full"
-                                             src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=4&amp;w=256&amp;h=256&amp;q=60"
-                                             alt="">
-                                    </div>
-                                    <div class="ml-4">
-                                        <div class="text-sm font-medium text-gray-900">
-                                            Jane Cooper
+                        @foreach($items as $item)
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 ">
+                                            <img class=""
+                                                 src="{{ $item->url }}"
+                                                 alt="" style="max-width: 80%">
                                         </div>
-                                        <div class="text-sm text-gray-500">
-                                            jane.cooper@example.com
+                                        <div class="ml-4">
+                                            <div class="text-sm text-gray-500">
+                                                {{ $item['description'] }}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">Regional Paradigm Technician</div>
-                                <div class="text-sm text-gray-500">Optimization</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900">
+                                        {{ sprintf('%01.2f', $item['price']) .'$' }}
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">{{ $item['title'] }}</div>
+                                    <div class="text-sm text-gray-500"></div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                  Active
+                  Available
                 </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                Admin
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <a href="#" class="text-indigo-600 hover:text-indigo-900">Edit</a>
-                            </td>
-                        </tr>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
 
-                        <!-- More items... -->
+                                    {{ number_format( $item->likes , 0 , '.' , ' ' ) }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    {{--<a href="#" class="text-indigo-600 hover:text-indigo-900">Edit</a>--}}
+                                </td>
+                            </tr>
+                        @endforeach
                         </tbody>
                     </table>
                 </div>
