@@ -15,6 +15,7 @@ class CreateFoodsTable extends Migration
     {
         Schema::create('foods', function (Blueprint $table) {
             $table->id();
+            $table->string('unsplash_id')->unique();
             $table->string('title')->nullable();
             $table->integer('price')->nullable();
             $table->integer('likes')->nullable();

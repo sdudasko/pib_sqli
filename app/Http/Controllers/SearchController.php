@@ -3,22 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Food;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Unsplash\Collection;
+use Illuminate\Support\Str;
 use Unsplash\HttpClient;
 use Unsplash\Search;
 
 
 class SearchController extends Controller
 {
-    private $numberOfItems = 20;
-
     public function index()
     {
         HttpClient::init([
-            'applicationId' => 'cQf5Tlh1o7saCE76X1MwuMbxUY0SvB-qY47Y1CIR5RI',
-            'secret'        => 'GVw7ETyyN-gtXtxYQnBj7WmDG5M7PYWsfPuk2gkq5xg',
+            'applicationId' => env('UNSPLASH_APP_ID'),
+            'secret'        => env('UNSPLASH_APP_SECRET'),
             'callbackUrl'   => 'pib_sqli/oauth/callback',
             'utmSource'     => 'pib_sqli',
         ]);
@@ -26,59 +23,45 @@ class SearchController extends Controller
         DB::table('foods')->truncate();
 
         $query = request()->get('q');
+
         if (!$query) {
-            $query = "random";
+            return view('frontend.search-results', [
+                'items' => [],
+            ]);
         }
 
+        $page = request()->get('page');
         $search = $query;
-        $page = 1;
-        $per_page = 15;
+        $page = $page ? 1 : $page;
+        $per_page = 50;
         $orientation = 'landscape';
 
-        $photos = Search::photos($search, $page, $per_page, $orientation);
+        $photos = Search::photos($search, $page, $per_page);
 
-        $items = collect($photos->getResults())->map(function($item) {
+        $items = collect($photos->getResults())->map(function ($item) { // TODO - iterate pages
+            $foodItem = Food::where('unsplash_id', $item['id'])->first();
+            if ($foodItem) {
+                return $foodItem;
+            }
+            try {
+                return Food::create([
+                    'unsplash_id' => $item['id'],
+                    'title'       => Str::limit($item['description'], 50, $limit = '...'),
+                    'price'       => rand(1, 100),
+                    'likes'       => $item['likes'],
+                    'url'         => $item['urls']['small'],
+                ]);
+            } catch (\Exception $exception) {
+                throw $exception;
+            }
 
-            return Food::create([
-                'title' => substr($item['description'], 0, 50),
-                'price' => rand(1, 100),
-                'likes' => $item['likes'],
-                'url' => $item['urls']['small'],
-            ]);
         });
 
+        $paginatedItems = collect($items)->paginate(15);
         return view('frontend.search-results', [
-            'items' => $items,
+            'items' => $paginatedItems,
+            'links' => $paginatedItems->appends(request()->input())->links(),
         ]);
     }
-
-    private function fillTable()
-    {
-//        $faker = \Faker\Factory::create();
-//        $faker->addProvider(new \FakerRestaurant\Provider\en_US\Restaurant($faker));
-//
-//        $generatedNames = collect([]);
-//        $name = $this->generateToArr($generatedNames, $faker);
-//
-//        for($i = 0; $i < $this->numberOfItems; $i++)
-//        {
-//            DB::table('foods')->insert($name);
-//        }
-
-    }
-
-    private function generateToArr($generatedNames, $faker)
-    {
-        $generatedNames->push($faker->foodName());
-        $generatedNames->push($faker->beverageName());
-        $generatedNames->push($faker->dairyName());
-        $generatedNames->push($faker->vegetableName());
-        $generatedNames->push($faker->fruitName());
-        $generatedNames->push($faker->meatName());
-        $generatedNames->push($faker->sauceName());
-
-        return $generatedNames->random();
-    }
-
 
 }

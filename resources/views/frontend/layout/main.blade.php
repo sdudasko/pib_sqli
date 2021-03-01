@@ -8,7 +8,7 @@
     <title>SQL Injector</title>
     @yield('page-css')
 </head>
-<body>
+<body class="bg-purple-600 bg-opacity-5" style="padding-top: 12px">
 
 @yield('content')
 
