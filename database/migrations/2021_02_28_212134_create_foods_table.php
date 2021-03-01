@@ -17,10 +17,12 @@ class CreateFoodsTable extends Migration
             $table->id();
             $table->string('unsplash_id')->unique();
             $table->string('title')->nullable();
-            $table->integer('price')->nullable();
+            $table->float('price')->nullable();
             $table->integer('likes')->nullable();
             $table->string('description')->nullable();
             $table->string('url')->nullable();
+            $table->string('file_path');
+
             $table->timestamps();
         });
     }

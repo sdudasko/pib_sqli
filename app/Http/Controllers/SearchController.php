@@ -80,10 +80,4 @@ class SearchController extends Controller
             'links' => $paginatedItems->appends(request()->input())->links(),
         ]);
     }
-
-    public function create()
-    {
-        return view('frontend.create');
-    }
-
 }

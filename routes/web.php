@@ -18,4 +18,6 @@ Route::get('/', function () {
 });
 
 Route::get('/sqli','App\Http\Controllers\SearchController@index')->name('search');
-Route::get('/create','App\Http\Controllers\SearchController@create')->name('create');
+
+Route::get('/create','App\Http\Controllers\ItemController@create')->name('create');
+Route::post('/store','App\Http\Controllers\ItemController@store')->name('store');
