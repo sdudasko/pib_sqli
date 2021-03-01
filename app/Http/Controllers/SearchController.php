@@ -30,13 +30,15 @@ class SearchController extends Controller
             ]);
         }
 
+        $orientation = request()->get('orientation');
         $page = request()->get('page');
         $search = $query;
         $page = $page ? 1 : $page;
         $per_page = 50;
-        $orientation = 'landscape';
+        $orientation = $orientation ? $orientation : '';
 
-        $photos = Search::photos($search, $page, $per_page);
+        if ($orientation) $photos = Search::photos($search, $page, $per_page, $orientation);
+        else $photos = Search::photos($search, $page, $per_page);
 
         $items = collect($photos->getResults())->map(function ($item) { // TODO - iterate pages
             $foodItem = Food::where('unsplash_id', $item['id'])->first();

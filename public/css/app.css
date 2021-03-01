@@ -31176,6 +31176,11 @@ video {
           animation: bounce 1s infinite;
 }
 
+.filter--active {
+  background-color: rgba(139, 92, 246, var(--tw-bg-opacity));
+  color: white;
+}
+
 @media (min-width: 640px) {
   .sm\:container {
     width: 100%;

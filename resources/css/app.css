@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.filter--active {
+    background-color: rgba(139, 92, 246, var(--tw-bg-opacity));
+    color: white;
+}
