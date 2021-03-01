@@ -1,3 +1,16 @@
+@php
+    function mergeToUrl($param, $recognizeDirection = false, $direction = 'asc') {
+        if ($recognizeDirection) {
+            if (request()->has('direction')) {
+                request()->get('direction') == 'asc' ? $direction = 'desc' : $direction = 'asc';
+            } else {
+                $direction = 'asc';
+            }
+        }
+        return url()->current().'?'.http_build_query(array_merge(request()->all(),['orderBy' => $param, 'direction' => $direction]));
+    }
+@endphp
+
 @extends('frontend.layout.main')
 
 @section('content')
@@ -23,14 +36,14 @@
                                     </th>
                                     <th scope="col"
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Price
+                                        <a href="{{ mergeToUrl('price', true) }}">Price</a>
                                     {{--<th scope="col"--}}
                                     {{--class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">--}}
                                     {{--Discounted price--}}
                                     {{--</th>--}}
                                     <th scope="col"
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Title
+                                        <a href="{{ mergeToUrl('title', true) }}">Title</a>
                                     </th>
                                     <th scope="col"
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -38,7 +51,7 @@
                                     </th>
                                     <th scope="col"
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Likes
+                                        <a href="{{ mergeToUrl('likes', true) }}">Likes</a>
                                     </th>
                                     <th scope="col" class="relative px-6 py-3">
                                         <span class="sr-only">Availability</span>

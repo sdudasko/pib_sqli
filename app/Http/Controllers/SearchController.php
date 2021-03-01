@@ -31,11 +31,16 @@ class SearchController extends Controller
         }
 
         $orientation = request()->get('orientation');
+        $orientation = $orientation ? $orientation : '';
+
         $page = request()->get('page');
-        $search = $query;
         $page = $page ? 1 : $page;
         $per_page = 50;
-        $orientation = $orientation ? $orientation : '';
+
+        $search = $query;
+
+        $orderBy = request()->get('orderBy');
+        $direction = request()->get('direction');
 
         if ($orientation) $photos = Search::photos($search, $page, $per_page, $orientation);
         else $photos = Search::photos($search, $page, $per_page);
@@ -59,11 +64,26 @@ class SearchController extends Controller
 
         });
 
+        if ($orderBy) {
+            if (!$direction || $direction == 'asc') {
+                $items = $items->sortBy($orderBy);
+
+            } else {
+                $items = $items->sortByDesc($orderBy);
+            }
+        }
+
+
         $paginatedItems = collect($items)->paginate(15);
         return view('frontend.search-results', [
             'items' => $paginatedItems,
             'links' => $paginatedItems->appends(request()->input())->links(),
         ]);
+    }
+
+    public function create()
+    {
+        return view('frontend.create');
     }
 
 }

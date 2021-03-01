@@ -18,3 +18,4 @@ Route::get('/', function () {
 });
 
 Route::get('/sqli','App\Http\Controllers\SearchController@index')->name('search');
+Route::get('/create','App\Http\Controllers\SearchController@create')->name('create');

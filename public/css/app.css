@@ -31181,6 +31181,16 @@ video {
   color: white;
 }
 
+.create-label {
+  transition: .3s;
+}
+
+.create-label:hover {
+  background: purple;
+  color: white;
+  transition: .3s;
+}
+
 @media (min-width: 640px) {
   .sm\:container {
     width: 100%;

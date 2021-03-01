@@ -6,3 +6,12 @@
     background-color: rgba(139, 92, 246, var(--tw-bg-opacity));
     color: white;
 }
+
+.create-label {
+    transition: .3s;
+}
+.create-label:hover {
+    background: purple;
+    color: white;
+    transition: .3s;
+}
