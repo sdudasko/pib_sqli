@@ -7,6 +7,7 @@
         <div class="flex flex-col" style="width: 1200px; margin: 0 auto">
 
             @include('frontend.components.search')
+            @include('frontend.components.filter')
 
             @if (!collect($items)->isEmpty())
                 <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
