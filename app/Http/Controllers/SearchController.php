@@ -2,48 +2,41 @@
 
 namespace App\Http\Controllers;
 
+use App\ApiConnectors\ApiConnector;
 use App\Models\Food;
+use App\Services\DataRetrievalService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Unsplash\HttpClient;
 use Unsplash\Search;
 
 
 class SearchController extends Controller
 {
+    private $dataRetrievalService;
+
+    protected $perPage = 50;
+
+    public function __construct(DataRetrievalService $dataRetrievalService)
+    {
+        $this->dataRetrievalService = $dataRetrievalService;
+    }
+
     public function index()
     {
-        HttpClient::init([
-            'applicationId' => env('UNSPLASH_APP_ID'),
-            'secret'        => env('UNSPLASH_APP_SECRET'),
-            'callbackUrl'   => 'pib_sqli/oauth/callback',
-            'utmSource'     => 'pib_sqli',
-        ]);
+        (new ApiConnector())->connectToUnsplash();
 
         DB::table('foods')->truncate();
 
-        $query = request()->get('q');
+        $usi = $this->dataRetrievalService->retrieveInput();
 
-        if (!$query) {
-            return view('frontend.search-results', [
-                'items' => [],
-            ]);
-        }
+        if (!$usi['search']) return view('frontend.search-results', [ 'items' => [], ]);
 
-        $orientation = request()->get('orientation');
-        $orientation = $orientation ? $orientation : '';
+        $orientation = $usi['orientation'] ? $usi['orientation'] : '';
+        $page = $usi['page'] ? $usi['page'] : 1;
+        $per_page = $this->perPage;
 
-        $page = request()->get('page');
-        $page = $page ? 1 : $page;
-        $per_page = 50;
-
-        $search = $query;
-
-        $orderBy = request()->get('orderBy');
-        $direction = request()->get('direction');
-
-        if ($orientation) $photos = Search::photos($search, $page, $per_page, $orientation);
-        else $photos = Search::photos($search, $page, $per_page);
+        if ($orientation) $photos = Search::photos($usi['search'], $page, $per_page, $orientation);
+        else $photos = Search::photos($usi['search'], $page, $per_page);
 
         $items = collect($photos->getResults())->map(function ($item) { // TODO - iterate pages
             $foodItem = Food::where('unsplash_id', $item['id'])->first();
@@ -64,17 +57,17 @@ class SearchController extends Controller
 
         });
 
-        if ($orderBy) {
-            if (!$direction || $direction == 'asc') {
-                $items = $items->sortBy($orderBy);
+        if ($usi['orderBy']) {
+            if (!$usi['direction'] || $usi['direction'] == 'asc') {
+                $items = $items->sortBy($usi['orderBy']);
 
             } else {
-                $items = $items->sortByDesc($orderBy);
+                $items = $items->sortByDesc($usi['orderBy']);
             }
         }
 
-
         $paginatedItems = collect($items)->paginate(15);
+        
         return view('frontend.search-results', [
             'items' => $paginatedItems,
             'links' => $paginatedItems->appends(request()->input())->links(),

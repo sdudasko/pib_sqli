@@ -21,7 +21,7 @@ class CreateFoodsTable extends Migration
             $table->integer('likes')->nullable();
             $table->string('description')->nullable();
             $table->string('url')->nullable();
-            $table->string('file_path');
+            $table->string('file_path')->nullable();
 
             $table->timestamps();
         });
