@@ -70,7 +70,7 @@
                                                 </div>
                                                 <div class="ml-4">
                                                     <div class="text-sm text-gray-500">
-                                                        {{ $item['description'] }}
+                                                        {{ $item->description }}
                                                     </div>
                                                 </div>
                                             </div>
@@ -82,11 +82,11 @@
                                         {{--</td>--}}
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="text-sm font-medium text-gray-900">
-                                                {{ sprintf('%01.2f', $item['price']) .'$' }}
+                                                {{ sprintf('%01.2f', $item->price) .'$' }}
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm text-gray-900">{{ $item['title'] }}</div>
+                                            <div class="text-sm text-gray-900">{{ $item->title }}</div>
                                             <div class="text-sm text-gray-500"></div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
