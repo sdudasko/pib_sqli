@@ -15,3 +15,13 @@ mix.js('resources/js/app.js', 'public/js')
     .postCss('resources/css/app.css', 'public/css', [
         require("tailwindcss"),
     ]);
+
+// mix.js("resources/js/app.js", "public/build/js").sass(
+//     "resources/scss/app.scss",
+//     "public/build/css"
+// );
+
+mix.sass(
+    "resources/scss/app.scss",
+    "public/css"
+);

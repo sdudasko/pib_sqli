@@ -13,7 +13,7 @@ class ItemController extends Controller
 
     public function store(Request $request)
     {
-        dd('here');
+        dd($request->all());
         // Validate the inputs
         $request->validate([
             'name' => 'required',
