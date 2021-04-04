@@ -15,13 +15,17 @@ class CreateFoodsTable extends Migration
     {
         Schema::create('foods', function (Blueprint $table) {
             $table->id();
-            $table->text('unsplash_id')->unique();
-            $table->text('title')->nullable();
+
+            $table->text('unsplash_id')->unique()->nullable();
+            $table->string('title')->nullable();
             $table->float('price')->nullable();
             $table->integer('likes')->nullable();
             $table->text('description')->nullable();
-            $table->text('url')->nullable();
-            $table->text('file_path')->nullable();
+            $table->string('url')->nullable();
+            $table->string('file_path')->nullable();
+
+            $table->integer('user_id')->nullable();
+            $table->foreign('user_id')->on('users')->references('id')->onDelete('set null');
 
             $table->timestamps();
         });

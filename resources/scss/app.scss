@@ -2,11 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.filter--active {
-  background-color: rgba(139, 92, 246, var(--tw-bg-opacity));
-  color: white;
-}
-
 .create-label {
   transition: .3s;
 }
@@ -14,4 +9,80 @@
   background: purple;
   color: white;
   transition: .3s;
+}
+.plus-button {
+  border: 2px solid lightgrey;
+  background-color: #fff;
+  font-size: 16px;
+  height: 2.5em;
+  width: 2.5em;
+  border-radius: 999px;
+  position: relative;
+  margin-right: 90px;
+
+  &:after,
+  &:before {
+    content: "";
+    display: block;
+    background-color: grey;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  &:before {
+    height: 1em;
+    width: 0.2em;
+  }
+
+  &:after {
+    height: 0.2em;
+    width: 1em;
+  }
+
+  transition: .35s;
+
+  &:hover, &:active {
+    background-color: rgba(139, 92, 246);
+    color: white;
+    transition: .4s;
+    border: 2px solid white;
+
+    &:after, &:before {
+      background-color: white;
+    }
+  }
+}
+
+.plus-button--small {
+  font-size: 12px;
+}
+
+.plus-button--large {
+  font-size: 22px;
+}
+
+.filter-row {
+  margin-left: 2%;
+  margin-bottom: 20px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.create-container {
+  flex-direction: column;
+
+  .plus-button {
+    margin: 0 auto 20px;
+
+    &:before, &:after {
+      width: 0;
+    }
+  }
+}
+
+.filter--active {
+  background-color: rgba(139, 92, 246, var(--tw-bg-opacity)) !important;
+  color: white !important;
 }

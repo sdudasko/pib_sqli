@@ -4,8 +4,13 @@ namespace App\Http\Controllers;
 
 use App\ApiConnectors\ApiConnector;
 use App\Models\Food;
+use App\Models\Name;
+use App\Models\User;
 use App\Services\DataRetrievalService;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -26,53 +31,73 @@ class SearchController extends Controller
         (new ApiConnector())->connectToUnsplash();
 
         $this->queryBuilder = Food::query();
-//        DB::table('foods')->truncate();
 
     }
 
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @throws \Illuminate\Validation\ValidationException
+     */
     public function index()
     {
-        DB::enableQueryLog();
-        DB::table('foods')->truncate();
+//        DB::enableQueryLog();
+//        DB::table('foods')->truncate();
         $usi = $this->dataRetrievalService->retrieveInput();
 
-        if (!$usi['search']) return view('frontend.search-results', ['items' => [],]);
+//        if (!$usi['search']) return view('frontend.search-results', ['items' => [],]);
         $per_page = $this->perPage;
+
+        !$usi['search'] ? $usi['search'] = 'cat' : $usi['search'];
 
         $search = $usi['search'];
 
-//      1. Nezabezpočená query
-        $this->queryBuilder = $this->queryBuilder->whereRaw(
-            "title like '%$search%'"
-        );
+
+////      1. Nezabezpočená query
+//        $this->queryBuilder = $this->queryBuilder->whereRaw(
+//            "title like '%$search%'"
+//        );
 ////      1. Sposôb ochrany
-        $this->queryBuilder = $this->queryBuilder->whereRaw(
-            "title like ?", ["%$search%"]
-        );
+//        $this->queryBuilder = $this->queryBuilder->whereRaw(
+//            "title like ?", ["%$search%"]
+//        );
 ////      2. Sposôb ochrany
 //        $this->queryBuilder = $this->queryBuilder->where(
 //            'title', "like", "%$search%"
 //        );
 ////      3. Sposôb ochrany
+
         $sanitized = Validator::make(request()->all(), [
             'q' => 'string',
+            'user' => 'integer',
         ])->validated();
 
-        if ($usi['orientation'])
-            $photos = Search::photos($usi['search'], $usi['page'], $per_page, $usi['orientation']);
-        else
-            $photos = Search::photos($usi['search'], $usi['page'], $per_page);
+        if (is_null(Food::first())) {
+            $this->queryBuilder = $this->queryBuilder->where(
+                'title', "like", "%$search%"
+            );
+            if ($usi['orientation'])
+                $photos = Search::photos($usi['search'], $usi['page'], $per_page, $usi['orientation']);
+            else
+                $photos = Search::photos($usi['search'], $usi['page'], $per_page);
 
-        if (isset($usi['more_than_likes'])) {
-            $more_than_likes = $usi['more_than_likes'];
-
-            $this->queryBuilder = $this->queryBuilder->whereRaw("likes > $more_than_likes");
+            collect($photos->getResults())->each(function ($item) { // TODO - iterate pages
+                $this->createItem($item);
+            });
+        } else {
+            //
         }
 
-        collect($photos->getResults())->each(function ($item) { // TODO - iterate pages
-            $foodItem = Food::where('unsplash_id', $item['id'])->first();
-            $this->createItem($item);
-        });
+        DB::enableQueryLog();
+        // Vulnerable query
+        if (request()->user) {
+
+            $user = User::findOrFail($sanitized['user']);
+            $first_name = $user->first_name;
+
+            $this->queryBuilder = $this->queryBuilder
+                ->leftJoin('users', 'foods.user_id', '=', 'users.id')
+                ->whereRaw("first_name =" . " '$first_name' ");
+        }
 
         // Vulnerable query
         if ($usi['orderBy']) {
@@ -83,14 +108,20 @@ class SearchController extends Controller
             $items = Food::all();
         }
 
+        if (isset($usi['more_than_likes'])) {
+            $more_than_likes = $usi['more_than_likes'];
+
+            $this->queryBuilder = $this->queryBuilder->whereRaw("likes > $more_than_likes");
+        }
+
         $items = $this->queryBuilder->get();
-//        dd(DB::getQueryLog());
 
         if ($usi['orderBy']) {
             if (!$usi['direction'] || $usi['direction'] == 'asc') $items = $items->sortBy($usi['orderBy']);
 
             else $items = $items->sortByDesc($usi['orderBy']);
         }
+
 
         $paginatedItems = collect($items)->paginate(15);
 
@@ -103,16 +134,25 @@ class SearchController extends Controller
     private function createItem($item)
     {
         try {
-            return Food::create([
+            $food = new Food([
                 'unsplash_id' => $item['id'],
                 'title'       => Str::limit($item['description'], 50, $limit = '...'),
                 'price'       => rand(1, 100),
                 'likes'       => $item['likes'],
                 'url'         => $item['urls']['small'],
+                'description' => null,
             ]);
+            $food->save();
         } catch (\Exception $exception) {
             throw $exception;
         }
 
+    }
+
+    public function paginate($items, $perPage = 15, $page = null, $options = [])
+    {
+        $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
+        $items = $items instanceof Collection ? $items : Collection::make($items);
+        return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
     }
 }

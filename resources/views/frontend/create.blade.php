@@ -2,21 +2,52 @@
 
 @section('content')
 
-    <div class=" flex items-center justify-center">
+    <div class=" flex items-center justify-center create-container">
+        <div class="">
+            <a href="{{ route('search') }}">
+                <button class="plus-button">
+                    <i class="fa fa-long-arrow-alt-left"></i>
+                </button>
+            </a>
+        </div>
 
         <form id="form" method="POST" action="{{ route('store') }}"
-              class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+              class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" enctype="multipart/form-data">
             {{ csrf_field() }}
             <h1 class="block text-gray-700 font-bold mb-2 text-xl text-center">Add new item to the greatest of the
                 databases!</h1>
             <br>
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="title">
+                    E-mail
+                </label>
+                <input
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        name="email" id="email" type="text" placeholder="xdudasko@stuba.sk" value="xdudasko@stuba.sk" required>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="title">
+                    First name
+                </label>
+                <input
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        name="first_name" id="first_name" type="text" placeholder="First name" required>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="title">
+                    Last name
+                </label>
+                <input
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        name="last_name" id="last_name" type="text" placeholder="Last name">
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="title">
                     Title
                 </label>
                 <input
                         class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        name="title" id="title" type="text" placeholder="Title" required>
+                        name="title" id="title" type="text" placeholder="Title" >
             </div>
 
             <div class="mb-4">
@@ -25,7 +56,7 @@
                 </label>
                 <input
                         class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        name="price" id="price" type="number" placeholder="Price" required>
+                        name="price" id="price" type="number" placeholder="Price" >
             </div>
             <div class="mb-4">
 
@@ -35,7 +66,7 @@
                 <textarea
                         class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         name="description" id="description" type="text" placeholder="Description"
-                        required></textarea>
+                        ></textarea>
             </div>
 
             <div class="flex items-center justify-center bg-grey-lighter" style="margin-top: 10px; margin-bottom: 10px">

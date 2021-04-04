@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Food;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class ItemController extends Controller
 {
@@ -13,31 +17,43 @@ class ItemController extends Controller
 
     public function store(Request $request)
     {
-        dd($request->all());
         // Validate the inputs
-        $request->validate([
-            'name' => 'required',
+        $validator = Validator::make($request->all(), [
+            'title'       => 'nullable',
+            'price'       => 'nullable',
+            'description' => 'nullable',
+            'file'        => 'nullable',
+            'last_name'   => 'nullable|string',
+            'first_name'  => 'required|string',
+            'email'       => ['required', 'email', 'string'],
         ]);
 
-        // ensure the request has a file before we attempt anything else.
-        if ($request->hasFile('file')) {
+        $validator->validate();
 
-            $request->validate([
-                'image' => 'mimes:jpeg,bmp,png' // Only allow .jpg, .bmp and .png file types.
-            ]);
+        if ($validator->fails()) { abort(422, $validator->errors()); }
 
-            // Save the file locally in the storage/public/ folder under a new folder named /product
-            $request->file->store('product', 'public');
+        $sanitized = $validator->validated();
 
-            // Store the record, using the new file hashname which will be it's new filename identity.
-            $product = new Product([
-                "name" => $request->get('name'),
-                "file_path" => $request->file->hashName()
-            ]);
-            $product->save(); // Finally, save the record.
+        $user = User::where('email', $sanitized['email'])->first();
+
+        if (!$user) {
+            $sanitized['password'] = bcrypt(Str::random(8));
+            $user = User::create($sanitized);
+        } else {
+            $user->update($sanitized);
         }
 
-        return view('products.create');
+        $food = new Food($sanitized);
+        $food->user_id = $user->id;
+
+        if ($request->has('file')) {
+            $request->file->store('food', 'public');
+            $food->file_path = $request->file->hashName();
+        }
+
+        $food->save();
+
+        return redirect()->route('create');
 
     }
 }

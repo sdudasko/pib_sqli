@@ -1,11 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-.filter--active {
-  background-color: rgba(139, 92, 246, var(--tw-bg-opacity));
-  color: white;
-}
-
 .create-label {
   transition: 0.3s;
 }
@@ -14,6 +9,74 @@
   background: purple;
   color: white;
   transition: 0.3s;
+}
+
+.plus-button {
+  border: 2px solid lightgrey;
+  background-color: #fff;
+  font-size: 16px;
+  height: 2.5em;
+  width: 2.5em;
+  border-radius: 999px;
+  position: relative;
+  margin-right: 90px;
+  transition: 0.35s;
+}
+.plus-button:after, .plus-button:before {
+  content: "";
+  display: block;
+  background-color: grey;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.plus-button:before {
+  height: 1em;
+  width: 0.2em;
+}
+.plus-button:after {
+  height: 0.2em;
+  width: 1em;
+}
+.plus-button:hover, .plus-button:active {
+  background-color: #8b5cf6;
+  color: white;
+  transition: 0.4s;
+  border: 2px solid white;
+}
+.plus-button:hover:after, .plus-button:hover:before, .plus-button:active:after, .plus-button:active:before {
+  background-color: white;
+}
+
+.plus-button--small {
+  font-size: 12px;
+}
+
+.plus-button--large {
+  font-size: 22px;
+}
+
+.filter-row {
+  margin-left: 2%;
+  margin-bottom: 20px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.create-container {
+  flex-direction: column;
+}
+.create-container .plus-button {
+  margin: 0 auto 20px;
+}
+.create-container .plus-button:before, .create-container .plus-button:after {
+  width: 0;
+}
+
+.filter--active {
+  background-color: rgba(139, 92, 246, var(--tw-bg-opacity)) !important;
+  color: white !important;
 }
 /*! tailwindcss v2.0.3 | MIT License | https://tailwindcss.com */
 

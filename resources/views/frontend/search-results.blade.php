@@ -9,6 +9,11 @@
         }
         return url()->current().'?'.http_build_query(array_merge(request()->all(),['orderBy' => $param, 'direction' => $direction]));
     }
+
+    function mergeWhereToUrl($param) {
+
+        return url()->current().'?'.http_build_query(array_merge(request()->all(),['first_name' => $param]));
+    }
 @endphp
 
 @extends('frontend.layout.main')
@@ -21,6 +26,7 @@
 
             @include('frontend.components.search')
             @include('frontend.components.filter')
+
 
             @if (!collect($items)->isEmpty())
                 <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -37,10 +43,7 @@
                                     <th scope="col"
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         <a href="{{ mergeToUrl('price', true) }}">Price</a>
-                                    {{--<th scope="col"--}}
-                                    {{--class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">--}}
-                                    {{--Discounted price--}}
-                                    {{--</th>--}}
+
                                     <th scope="col"
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         <a href="{{ mergeToUrl('title', true) }}">Title</a>
@@ -51,11 +54,17 @@
                                     </th>
                                     <th scope="col"
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <a>Availability</a>
+                                    </th>
+                                    <th scope="col"
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         <a href="{{ mergeToUrl('likes', true) }}">Likes</a>
                                     </th>
-                                    <th scope="col" class="relative px-6 py-3">
-                                        <span class="sr-only">Availability</span>
+                                    <th scope="col"
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <a href="">Author</a>
                                     </th>
+                                    <th></th>
                                 </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
@@ -64,22 +73,24 @@
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="flex items-center">
                                                 <div class="flex-shrink-0 ">
-                                                    <img class=""
-                                                         src="{{ $item->url }}"
-                                                         alt="" style="max-width: 80%">
+                                                    @if (!$item->file_path)
+                                                        <img class=""
+                                                             src="{{ $item->url }}"
+                                                             alt="" style="max-width: 450px; width: 80%">
+                                                    @else
+                                                        <img class=""
+                                                             src="{{ asset("storage/food/$item->file_path") }}"
+                                                             alt="" style="max-width: 450px; width: 80%">
+                                                    @endif
                                                 </div>
-                                                <div class="ml-4">
-                                                    <div class="text-sm text-gray-500">
-                                                        {{ $item->description }}
-                                                    </div>
-                                                </div>
+
                                             </div>
                                         </td>
-                                        {{--<td class="px-6 py-4 whitespace-nowrap">--}}
-                                        {{--<div class="text-sm font-medium text-gray-900">--}}
-                                        {{--{{ sprintf('%01.2f', $item['price']) .'$' }}--}}
-                                        {{--</div>--}}
-                                        {{--</td>--}}
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm font-medium text-gray-900">
+                                                {{ $item->description }}
+                                            </div>
+                                        </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="text-sm font-medium text-gray-900">
                                                 {{ sprintf('%01.2f', $item->price) .'$' }}
@@ -97,6 +108,10 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
 
                                             {{ number_format( $item->likes , 0 , '.' , ' ' ) }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+
+                                            <a href="{{ mergeWhereToUrl($item->user_id) }}">{{ $item->first_name }}</a>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             {{--<a href="#" class="text-indigo-600 hover:text-indigo-900">Edit</a>--}}

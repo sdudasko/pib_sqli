@@ -9,7 +9,12 @@ class Food extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'price', 'likes', 'description', 'url', 'unsplash_id', 'file_path'];
+    protected $fillable = ['title', 'price', 'likes', 'description', 'url', 'unsplash_id', 'file_path', 'user_id'];
 
     protected $table = 'foods';
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
