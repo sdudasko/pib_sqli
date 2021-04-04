@@ -88,6 +88,10 @@ class SearchController extends Controller
         }
 
         DB::enableQueryLog();
+
+        $this->queryBuilder = $this->queryBuilder
+            ->leftJoin('users', 'foods.user_id', '=', 'users.id');
+
         // Vulnerable query
         if (request()->user) {
 
@@ -95,7 +99,6 @@ class SearchController extends Controller
             $first_name = $user->first_name;
 
             $this->queryBuilder = $this->queryBuilder
-                ->leftJoin('users', 'foods.user_id', '=', 'users.id')
                 ->whereRaw("first_name =" . " '$first_name' ");
         }
 
@@ -122,6 +125,8 @@ class SearchController extends Controller
             else $items = $items->sortByDesc($usi['orderBy']);
         }
 
+        $items->load('user');
+//        dd($items);
 
         $paginatedItems = collect($items)->paginate(15);
 

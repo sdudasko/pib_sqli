@@ -24,9 +24,18 @@
         </a>
     </div>
 
-    <div class="">
-        <a href="{{ route('create') }}">
-            <button class="plus-button"></button>
-        </a>
+    <div class="filter-cta-container">
+        <div class="">
+            <a href="{{ route('create') }}">
+                <button class="plus-button nav-button"></button>
+            </a>
+        </div>
+        <div class="create-container">
+            <a href="{{ route('search') }}">
+                <button class="plus-button nav-button">
+                    <i class="fa fa-long-arrow-alt-left"></i>
+                </button>
+            </a>
+        </div>
     </div>
 </div>

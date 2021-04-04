@@ -12,7 +12,7 @@
 
     function mergeWhereToUrl($param) {
 
-        return url()->current().'?'.http_build_query(array_merge(request()->all(),['first_name' => $param]));
+        return url()->current().'?'.http_build_query(array_merge(request()->all(),['user' => $param, 'page' => 1]));
     }
 @endphp
 
@@ -20,7 +20,7 @@
 
 @section('content')
 
-    <div class="">
+    <div class="search-results">
 
         <div class="flex flex-col" style="width: 1200px; margin: 0 auto">
 

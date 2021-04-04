@@ -86,3 +86,13 @@
   background-color: rgba(139, 92, 246, var(--tw-bg-opacity)) !important;
   color: white !important;
 }
+
+.search-results .filter-cta-container {
+  display: flex;
+  align-content: center;
+  align-items: center;
+}
+
+.search-results .nav-button {
+  margin: 0 10px 0 0;
+}
