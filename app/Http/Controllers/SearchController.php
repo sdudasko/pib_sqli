@@ -128,7 +128,7 @@ class SearchController extends Controller
         $items->load('user');
 //        dd($items);
 
-        $paginatedItems = collect($items)->paginate(15);
+        $paginatedItems = collect($items)->sortBy('id')->paginate(50);
 
         return view('frontend.search-results', [
             'items' => $paginatedItems,

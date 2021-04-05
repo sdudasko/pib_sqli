@@ -23,7 +23,7 @@
                 </label>
                 <input
                         class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        name="email" id="email" type="text" placeholder="xdudasko@stuba.sk" value="xdudasko@stuba.sk" required>
+                        name="email" dusk="email" id="email" type="text" placeholder="xdudasko@stuba.sk" value="xdudasko@stuba.sk" required>
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="title">
@@ -31,7 +31,7 @@
                 </label>
                 <input
                         class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        name="first_name" id="first_name" type="text" placeholder="First name" required>
+                        name="first_name" dusk="first_name" id="first_name" type="text" placeholder="First name" required>
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="title">
@@ -39,7 +39,7 @@
                 </label>
                 <input
                         class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        name="last_name" id="last_name" type="text" placeholder="Last name">
+                        name="last_name" id="last_name" dusk="last_name" type="text" placeholder="Last name">
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="title">
@@ -47,7 +47,7 @@
                 </label>
                 <input
                         class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        name="title" id="title" type="text" placeholder="Title" >
+                        name="title" dusk="title" id="title" type="text" placeholder="Title" >
             </div>
 
             <div class="mb-4">
@@ -56,7 +56,7 @@
                 </label>
                 <input
                         class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        name="price" id="price" type="number" placeholder="Price" >
+                        name="price" dusk="price" id="price" type="number" placeholder="Price" >
             </div>
             <div class="mb-4">
 
@@ -65,7 +65,7 @@
                 </label>
                 <textarea
                         class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        name="description" id="description" type="text" placeholder="Description"
+                        name="description" dusk="description" id="description" type="text" placeholder="Description"
                         ></textarea>
             </div>
 
