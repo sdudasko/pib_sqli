@@ -50,10 +50,6 @@
                                     </th>
                                     <th scope="col"
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Status
-                                    </th>
-                                    <th scope="col"
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         <a href="{{ mergeToUrl('likes', true) }}">Likes</a>
                                     </th>
                                     <th scope="col"
@@ -81,7 +77,7 @@
                                                         @endif
                                                     @else
                                                         <img class=""
-                                                             src="{{ asset("storage/food/$item->file_path") }}"
+                                                             src="{{ asset("photo$item->file_path") }}"
                                                              alt="" style="max-width: 450px; width: 80%">
                                                     @endif
                                                 </div>

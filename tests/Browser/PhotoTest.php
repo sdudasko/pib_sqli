@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
 
-class FoodTest extends DuskTestCase
+class PhotoTest extends DuskTestCase
 {
 //    use DatabaseMigrations;
 

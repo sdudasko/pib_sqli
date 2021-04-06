@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\ApiConnectors\ApiConnector;
-use App\Models\Food;
+use App\Models\Photo;
 use App\Models\Name;
 use App\Models\User;
 use App\Services\DataRetrievalService;
@@ -30,7 +30,7 @@ class SearchController extends Controller
         $this->dataRetrievalService = $dataRetrievalService;
         (new ApiConnector())->connectToUnsplash();
 
-        $this->queryBuilder = Food::query();
+        $this->queryBuilder = Photo::query();
 
     }
 
@@ -41,7 +41,7 @@ class SearchController extends Controller
     public function index()
     {
 //        DB::enableQueryLog();
-//        DB::table('foods')->truncate();
+//        DB::table('photos')->truncate();
         $usi = $this->dataRetrievalService->retrieveInput();
 
 //        if (!$usi['search']) return view('frontend.search-results', ['items' => [],]);
@@ -71,7 +71,7 @@ class SearchController extends Controller
             'user' => 'integer',
         ])->validated();
 
-        if (is_null(Food::first())) {
+        if (is_null(Photo::first())) {
             $this->queryBuilder = $this->queryBuilder->where(
                 'title', "like", "%$search%"
             );
@@ -90,7 +90,7 @@ class SearchController extends Controller
         DB::enableQueryLog();
 
         $this->queryBuilder = $this->queryBuilder
-            ->leftJoin('users', 'foods.user_id', '=', 'users.id');
+            ->leftJoin('users', 'photos.user_id', '=', 'users.id');
 
         // Vulnerable query
         if (request()->user) {
@@ -106,9 +106,9 @@ class SearchController extends Controller
         if ($usi['orderBy']) {
 //            $this->queryBuilder = $this->queryBuilder->orderBy($usi['orderBy']);
             $this->queryBuilder = $this->queryBuilder->orderByRaw($usi['orderBy']);
-//            $items = Food::orderBy($usi['orderBy'])->get();
+//            $items = Photo::orderBy($usi['orderBy'])->get();
         } else {
-            $items = Food::all();
+            $items = Photo::all();
         }
 
         if (isset($usi['more_than_likes'])) {
@@ -139,7 +139,7 @@ class SearchController extends Controller
     {
         $user_ids = User::all()->pluck('id');
         try {
-            $food = new Food([
+            $photo = new Photo([
                 'unsplash_id' => $item['id'],
                 'title'       => Str::limit($item['description'], 50, $limit = '...'),
                 'price'       => rand(1, 100),
@@ -148,7 +148,7 @@ class SearchController extends Controller
                 'description' => null,
                 'user_id'     => $user_ids->random(),
             ]);
-            $food->save();
+            $photo->save();
         } catch (\Exception $exception) {
             throw $exception;
         }

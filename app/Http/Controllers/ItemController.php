@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Food;
+use App\Models\Photo;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -45,11 +45,11 @@ class ItemController extends Controller
             $user->update($sanitized);
         }
 
-        $food = new Food($sanitized);
+        $food = new Photo($sanitized);
         $food->user_id = $user->id;
 
         if ($request->has('file')) {
-            $request->file->store('food', 'public');
+            $request->file->store('photo', 'public');
             $food->file_path = $request->file->hashName();
         }
 

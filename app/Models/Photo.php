@@ -5,13 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Food extends Model
+class Photo extends Model
 {
     use HasFactory;
 
     protected $fillable = ['title', 'price', 'likes', 'description', 'url', 'unsplash_id', 'file_path', 'user_id'];
 
-    protected $table = 'foods';
+    protected $table = 'photos';
 
     public function user()
     {
