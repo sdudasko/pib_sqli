@@ -67,7 +67,7 @@ class SearchController extends Controller
 ////      3. Sposôb ochrany
 
         $sanitized = Validator::make(request()->all(), [
-            'q' => 'string',
+            'q'    => 'string',
             'user' => 'integer',
         ])->validated();
 
@@ -126,7 +126,6 @@ class SearchController extends Controller
         }
 
         $items->load('user');
-//        dd($items);
 
         $paginatedItems = collect($items)->sortBy('id')->paginate(50);
 
@@ -138,6 +137,7 @@ class SearchController extends Controller
 
     private function createItem($item)
     {
+        $user_ids = User::all()->pluck('id');
         try {
             $food = new Food([
                 'unsplash_id' => $item['id'],
@@ -146,6 +146,7 @@ class SearchController extends Controller
                 'likes'       => $item['likes'],
                 'url'         => $item['urls']['small'],
                 'description' => null,
+                'user_id'     => $user_ids->random(),
             ]);
             $food->save();
         } catch (\Exception $exception) {

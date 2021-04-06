@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Food;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -33,6 +34,7 @@ class ItemController extends Controller
         if ($validator->fails()) { abort(422, $validator->errors()); }
 
         $sanitized = $validator->validated();
+        DB::enableQueryLog();
 
         $user = User::where('email', $sanitized['email'])->first();
 

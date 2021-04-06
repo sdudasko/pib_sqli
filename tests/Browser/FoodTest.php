@@ -61,6 +61,7 @@ class FoodTest extends DuskTestCase
                         ->clickLink('UNION SELECT', 'a:contains(UNION SELECT):last')
                         ->pause(500)
                         ->assertSee("PostgreSQL")
+                        ->pause(5000000)
                     ;
 
                     Log::info("Success!!! Query: " . $maliciousString);

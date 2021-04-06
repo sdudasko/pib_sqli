@@ -54,10 +54,6 @@
                                     </th>
                                     <th scope="col"
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        <a>Availability</a>
-                                    </th>
-                                    <th scope="col"
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         <a href="{{ mergeToUrl('likes', true) }}">Likes</a>
                                     </th>
                                     <th scope="col"
@@ -70,13 +66,19 @@
                                 <tbody class="bg-white divide-y divide-gray-200">
                                 @forelse($items as $item)
                                     <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap">
+                                        <td class="px-6 py-4 whitespace-nowrap" style="min-width: 250px">
                                             <div class="flex items-center">
                                                 <div class="flex-shrink-0 ">
                                                     @if (!$item->file_path)
-                                                        <img class=""
-                                                             src="{{ $item->url }}"
-                                                             alt="" style="max-width: 450px; width: 80%">
+                                                        @if ($item->url)
+                                                            <img class=""
+                                                                 src="{{ $item->url }}"
+                                                                 alt="" style="max-width: 450px; width: 80%">
+                                                        @else
+                                                            <img class=""
+                                                                 src="{{ asset('placeholder-image.jpg') }}"
+                                                                 alt="" style="max-width: 450px">
+                                                        @endif
                                                     @else
                                                         <img class=""
                                                              src="{{ asset("storage/food/$item->file_path") }}"
@@ -88,22 +90,12 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="text-sm font-medium text-gray-900">
-                                                {{ $item->description }}
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm font-medium text-gray-900">
                                                 {{ sprintf('%01.2f', $item->price) .'$' }}
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="text-sm text-gray-900">{{ $item->title }}</div>
                                             <div class="text-sm text-gray-500"></div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                  Available
-                </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
 
@@ -113,9 +105,6 @@
 
                                             <a href="{{ mergeWhereToUrl($item->user_id) }}">{{ $item->first_name }}</a>
                                         </td>
-                                        {{--<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">--}}
-                                            {{--<a href="#" class="text-indigo-600 hover:text-indigo-900">Edit</a>--}}
-                                        {{--</td>--}}
                                     </tr>
                                 @empty
 
