@@ -12,10 +12,9 @@
         </div>
 
         <form id="form" method="POST" action="{{ route('store') }}"
-              class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" enctype="multipart/form-data">
+              class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" enctype="multipart/form-data" style="min-width: 500px">
             {{ csrf_field() }}
-            <h1 class="block text-gray-700 font-bold mb-2 text-xl text-center">Add new item to the greatest of the
-                databases!</h1>
+            <h1 class="block text-gray-700 font-bold mb-2 text-xl text-center">Add new photo</h1>
             <br>
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="title">

@@ -21,7 +21,7 @@ class SearchController extends Controller
 {
     private $dataRetrievalService;
 
-    protected $perPage = 50;
+    protected $perPage = 10;
 
     protected $queryBuilder;
 
@@ -40,23 +40,21 @@ class SearchController extends Controller
      */
     public function index()
     {
-//        DB::enableQueryLog();
-//        DB::table('photos')->truncate();
         $usi = $this->dataRetrievalService->retrieveInput();
 
 //        if (!$usi['search']) return view('frontend.search-results', ['items' => [],]);
         $per_page = $this->perPage;
 
-        !$usi['search'] ? $usi['search'] = 'cat' : $usi['search'];
+        !$usi['search'] ? $usi['search'] = 'dog' : $usi['search'];
 
         $search = $usi['search'];
 
 
-////      1. Nezabezpočená query
+//      1. Nezabezpočená query
 //        $this->queryBuilder = $this->queryBuilder->whereRaw(
 //            "title like '%$search%'"
 //        );
-////      1. Sposôb ochrany
+//      1. Sposôb ochrany
 //        $this->queryBuilder = $this->queryBuilder->whereRaw(
 //            "title like ?", ["%$search%"]
 //        );
@@ -64,17 +62,17 @@ class SearchController extends Controller
 //        $this->queryBuilder = $this->queryBuilder->where(
 //            'title', "like", "%$search%"
 //        );
-////      3. Sposôb ochrany
-
+//      3. Sposôb ochrany
         $sanitized = Validator::make(request()->all(), [
             'q'    => 'string',
             'user' => 'integer',
         ])->validated();
 
+
         if (is_null(Photo::first())) {
-            $this->queryBuilder = $this->queryBuilder->where(
-                'title', "like", "%$search%"
-            );
+//            $this->queryBuilder = $this->queryBuilder->where(
+//                'title', "like", "%$search%"
+//            );
             if ($usi['orientation'])
                 $photos = Search::photos($usi['search'], $usi['page'], $per_page, $usi['orientation']);
             else
@@ -89,8 +87,10 @@ class SearchController extends Controller
 
         DB::enableQueryLog();
 
+//        if (isset($usi['user']) && $usi['user']) { // TODO - toto utok na where
         $this->queryBuilder = $this->queryBuilder
             ->leftJoin('users', 'photos.user_id', '=', 'users.id');
+//        }
 
         // Vulnerable query
         if (request()->user) {
@@ -121,13 +121,14 @@ class SearchController extends Controller
 
         if ($usi['orderBy']) {
             if (!$usi['direction'] || $usi['direction'] == 'asc') $items = $items->sortBy($usi['orderBy']);
-
             else $items = $items->sortByDesc($usi['orderBy']);
+        } else {
+            $items = $items->sortBy('id');
         }
 
         $items->load('user');
 
-        $paginatedItems = collect($items)->sortBy('id')->paginate(50);
+        $paginatedItems = collect($items)->paginate(50);
 
         return view('frontend.search-results', [
             'items' => $paginatedItems,
@@ -138,6 +139,7 @@ class SearchController extends Controller
     private function createItem($item)
     {
         $user_ids = User::all()->pluck('id');
+
         try {
             $photo = new Photo([
                 'unsplash_id' => $item['id'],

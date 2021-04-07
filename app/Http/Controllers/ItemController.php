@@ -34,7 +34,6 @@ class ItemController extends Controller
         if ($validator->fails()) { abort(422, $validator->errors()); }
 
         $sanitized = $validator->validated();
-        DB::enableQueryLog();
 
         $user = User::where('email', $sanitized['email'])->first();
 
@@ -45,15 +44,15 @@ class ItemController extends Controller
             $user->update($sanitized);
         }
 
-        $food = new Photo($sanitized);
-        $food->user_id = $user->id;
+        $photo = new Photo($sanitized);
+        $photo->user_id = $user->id;
 
         if ($request->has('file')) {
             $request->file->store('photo', 'public');
-            $food->file_path = $request->file->hashName();
+            $photo->file_path = $request->file->hashName();
         }
 
-        $food->save();
+        $photo->save();
 
         return redirect()->route('create');
 

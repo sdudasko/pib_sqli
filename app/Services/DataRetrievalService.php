@@ -14,6 +14,7 @@ class DataRetrievalService
             'page'            => request()->get('page'),
             'orderBy'         => request()->get('orderBy'),
             'direction'       => request()->get('direction'),
+            'user'            => request()->get('user'),
         ];
 
         $input['orientation'] = $input['orientation'] ? $input['orientation'] : '';

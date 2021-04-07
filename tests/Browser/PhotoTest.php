@@ -13,12 +13,12 @@ class PhotoTest extends DuskTestCase
 //    use DatabaseMigrations;
 
     protected $env_debug_on = [
-        'true' => [
-            '500' => 'Syntax error:'
+        'true'  => [
+            '500' => 'Syntax error:',
         ],
         'false' => [
-            '500' => 'SERVER ERROR'
-        ]
+            '500' => 'SERVER ERROR',
+        ],
     ];
 
     protected $secondOrderSQLiQueries = [
@@ -35,21 +35,20 @@ class PhotoTest extends DuskTestCase
 
             // TODO - Test all parameters
 
-            collect($this->secondOrderSQLiQueries)->each(function($q) use ($browser) {
+            collect($this->secondOrderSQLiQueries)->each(function ($q) use ($browser) {
                 $maliciousString = $q;
 
                 $browser->visit('/create')
-                    ->typeSlowly('email', 'stefan.dudasko'.Str::random(5).'@gmail.com', 10)
+                    ->typeSlowly('email', 'stefan.dudasko' . Str::random(5) . '@gmail.com', 10)
                     ->typeSlowly('last_name', 'xuser last_name', 10)
                     ->typeSlowly('title', 'xuser title', 10)
                     ->typeSlowly('price', 10, 10)
                     ->typeSlowly('description', 'description', 10)
                     ->typeSlowly('first_name', $maliciousString, 10)
-                    ->press('Submit')
-                ;
+                    ->press('Submit');
 
                 // TODO - lets suppose we got 500 - check we really have 500
-//            TODO nech nie je page fixne - http://pib_sqli.test/sqli?page=4
+                // TODO nech nie je page fixne - http://pib_sqli.test/sqli?page=4
 
                 $browser
                     ->visit('/sqli?page=1')
@@ -61,10 +60,9 @@ class PhotoTest extends DuskTestCase
                         ->clickLink('UNION SELECT', 'a:contains(UNION SELECT):last')
                         ->pause(500)
                         ->assertSee("PostgreSQL")
-                        ->pause(5000000)
-                    ;
+                        ->pause(5000000);
 
-                    Log::info("Success!!! Query: " . $maliciousString);
+                    Log::info("Success! Query: " . $maliciousString);
                 } catch (\Exception $e) {
 
                 }
@@ -73,6 +71,7 @@ class PhotoTest extends DuskTestCase
             $browser->storeConsoleLog('_test_' . now());
         });
     }
+
     /**
      * A Dusk test example.
      *
@@ -102,18 +101,88 @@ class PhotoTest extends DuskTestCase
 
             // TODO - Test all parameters
 
-            $browser->visit('/sqli')
-                ->typeSlowly('q', '\'', 20)
-                ->pause('', 2000)
-                ->press('Search')
-                ->assertSee($expected_error_text_500)
-            ;
+            try {
+                $browser->visit('/sqli')
+                    ->typeSlowly('q', '\'', 20)
+                    ->pause(1000)
+                    ->press('Search')
+                    ->assertSee($expected_error_text_500);
+            } catch (\Exception $e) {
+//                TODO - check if 500
+            }
 
-            $this->assertDatabaseHas('users', [
-                'email' => 'xdudasko@stuba.sk',
-            ]);
+            $links = collect($browser->elements('a'));
+            $links_count = $links->count();
+
+            while (!$links->isEmpty()) {
+                try {
+                    $link = $links->first();
+                    $links->shift();
+                    $link->click();
+
+                    $browser->visit('/sqli');
+                } catch (\Exception $e) {
+                    var_dump($e->getMessage());
+                }
+            }
 
             $browser->storeConsoleLog('_test_' . now());
         });
+    }
+
+    public function testListingAttributes()
+    {
+        $this->browse(function (Browser $browser) {
+
+            $browser->visit('/sqli')
+                ->typeSlowly('q', '\'', 20)
+                ->pause(1000)
+                ->press('Search');
+
+            $browser->visit('/sqli');
+
+            $links = collect($browser->elements('a'));
+            $links_count = $links->count();
+
+            $counter = 0;
+            while ($counter < $links_count) {
+                try {
+                    $links_count--;
+                    $browser->visit('/sqli');
+
+                    $links = collect($browser->elements('a'));
+                    $link = $links->get($counter);
+                    $url = $link->getAttribute('href');
+
+                    $parts = parse_url($url);
+
+                    if ($parts['query']) { // We found query parameters
+                        $query_params = explode('&', $parts['query']);
+
+                        $param_information = explode('=', $query_params[0]);
+                        $param_key = $param_information[0];
+                        $param_val = $param_information[1];
+
+                        $links->shift();
+//                        $link->click(); // No need to click now, we want to modify parameters
+                        $new_link = "pib_sqli.test/sqli?$param_key='";
+
+                        $debug = getenv('APP_DEBUG');
+                        $expected_error_text_500 = $this->env_debug_on[$debug][500];
+
+                        $browser->visit($new_link)
+                            ->assertSee($expected_error_text_500);
+                    }
+
+                } catch (\Exception $e) {
+
+                }
+                $counter++;
+            }
+
+            $browser->storeConsoleLog('_test_' . now());
+        });
+
+
     }
 }
